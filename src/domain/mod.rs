@@ -1,4 +1,5 @@
 pub mod contact_info;
+pub mod experience;
 pub mod overview;
 
 use async_trait::async_trait;

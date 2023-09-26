@@ -16,7 +16,14 @@ impl Dao for ContactInfoDao {
     async fn retrieve_all(pool: &SqlitePool) -> Result<Vec<Box<ContactInfoDao>>> {
         let contact_infos_result: Result<Vec<ContactInfoDao>, sqlx::Error> = sqlx::query_as!(
             ContactInfoDao,
-            "select id, method, information from contact_info"
+            "select
+                id,
+                method,
+                information
+            from
+                contact_info
+            order by
+                id asc"
         )
         .fetch_all(pool)
         .await;

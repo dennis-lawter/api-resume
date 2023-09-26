@@ -6,9 +6,11 @@ use poem_openapi::Tags;
 use sqlx::SqlitePool;
 
 use crate::domain::contact_info::ContactInfoDao;
+use crate::domain::experience::ExperienceDao;
 use crate::domain::overview::OverviewDao;
 use crate::domain::Dao;
 use crate::render::contact_info::ContactInfoView;
+use crate::render::experience::ExperienceView;
 use crate::render::overview::OverviewView;
 use crate::render::View;
 
@@ -57,5 +59,23 @@ impl ApiV1 {
             .collect();
 
         Ok(Json(contact_info_views))
+    }
+
+    /// Experience
+    #[oai(path = "/experience", method = "get", tag = "ApiTags::Experience")]
+    async fn experience_all(
+        &self,
+        pool: Data<&SqlitePool>,
+    ) -> poem::Result<Json<Vec<ExperienceView>>> {
+        let experiences = ExperienceDao::retrieve_all(pool.0)
+            .await
+            .map_err(|_| NotFoundError)?;
+
+        let experience_views: Vec<ExperienceView> = experiences
+            .into_iter()
+            .map(|dao| ExperienceView::from_domain(&dao))
+            .collect();
+
+        Ok(Json(experience_views))
     }
 }
