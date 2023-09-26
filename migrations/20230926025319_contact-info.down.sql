@@ -1,1 +1,1 @@
-DROP TABLE contact_info;
+drop table contact_info;

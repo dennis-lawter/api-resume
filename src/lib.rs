@@ -1,8 +1,9 @@
-mod api;
+mod action;
+mod domain;
+mod render;
 
-pub use crate::api::api_v1::api_v1_factory;
-
-use api::api_v1::ApiV1;
+use action::api_v1::ApiV1;
+use action::api_v1_factory::api_v1_factory;
 use color_eyre::Result;
 use poem::listener::TcpListener;
 use poem::middleware::AddDataEndpoint;

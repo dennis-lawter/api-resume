@@ -1,3 +1,5 @@
+mod domain;
+
 use color_eyre::Result;
 use dennis_lawter_resume_api_library::resume_api_factory;
 use sqlx::SqlitePool;

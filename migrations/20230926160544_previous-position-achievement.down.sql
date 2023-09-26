@@ -1,0 +1,1 @@
+drop table previous_position_achievement;
