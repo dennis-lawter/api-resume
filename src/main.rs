@@ -1,3 +1,5 @@
+#![feature(async_fn_in_trait)]
+
 mod domain;
 
 use color_eyre::Result;

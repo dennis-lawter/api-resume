@@ -5,6 +5,8 @@ use poem_openapi::Object;
 
 use crate::domain::contact_info::ContactInfoDao;
 
+use super::View;
+
 #[derive(ApiResponse)]
 pub enum GetContactInfoListResponse {
     #[oai(status = 200)]
@@ -19,11 +21,11 @@ pub struct ContactInfoView {
     method: String,
     information: String,
 }
-impl ContactInfoView {
-    pub fn from_domain(dao: ContactInfoDao) -> Self {
+impl View<ContactInfoDao> for ContactInfoView {
+    fn from_domain(dao: &ContactInfoDao) -> Self {
         Self {
-            method: dao.method,
-            information: dao.information,
+            method: dao.method.clone(),
+            information: dao.information.clone(),
         }
     }
 }
