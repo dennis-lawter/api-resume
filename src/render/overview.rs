@@ -3,7 +3,7 @@ use poem_openapi::payload::PlainText;
 use poem_openapi::ApiResponse;
 use poem_openapi::Object;
 
-use crate::domain::overview::OverviewDao;
+use crate::domain::overview::OverviewModel;
 
 use super::View;
 
@@ -22,12 +22,13 @@ pub struct OverviewView {
     pub title: String,
     pub objective: String,
 }
-impl View<OverviewDao> for OverviewView {
-    fn from_domain(dao: &OverviewDao) -> Self {
+impl View<OverviewModel> for OverviewView {}
+impl From<OverviewModel> for OverviewView {
+    fn from(model: OverviewModel) -> Self {
         Self {
-            full_name: dao.full_name.clone(),
-            title: dao.title.clone(),
-            objective: dao.objective.clone(),
+            full_name: model.full_name.clone(),
+            title: model.title.clone(),
+            objective: model.objective.clone(),
         }
     }
 }
