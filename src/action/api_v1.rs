@@ -1,18 +1,13 @@
-// use poem::error::NotFoundError;
-// use poem::web::Data;
-// use poem_openapi::payload::Json;
+use poem::error::NotFoundError;
+use poem::web::Data;
+use poem_openapi::payload::Json;
 use poem_openapi::OpenApi;
 use poem_openapi::Tags;
-// use sqlx::SqlitePool;
+use sqlx::SqlitePool;
 
-// use crate::domain::contact_info::ContactInfoDao;
-// use crate::domain::experience::ExperienceDao;
-// use crate::domain::overview::OverviewDao;
-// use crate::domain::Dao;
-// use crate::render::contact_info::ContactInfoView;
-// use crate::render::experience::ExperienceView;
-// use crate::render::overview::OverviewView;
-// use crate::render::View;
+use crate::domain::overview::OverviewModel;
+use crate::domain::StaticModel;
+use crate::render::overview::OverviewView;
 
 pub struct ApiV1;
 
@@ -25,24 +20,23 @@ enum ApiTags {
     Education,
 }
 
+const RESUME_ID: i64 = 1;
+
 #[OpenApi]
 impl ApiV1 {
     pub const PATH_VERSION: &'static str = "/v1";
 
-    // /// Resume Overview
-    // #[oai(path = "/", method = "get", tag = "ApiTags::Info")]
-    // async fn overview(&self, pool: Data<&SqlitePool>) -> poem::Result<Json<Vec<OverviewView>>> {
-    //     let overviews = OverviewDao::retrieve_all(pool.0)
-    //         .await
-    //         .map_err(|_| NotFoundError)?;
+    /// Resume Overview
+    #[oai(path = "/", method = "get", tag = "ApiTags::Info")]
+    async fn overview(&self, pool: Data<&SqlitePool>) -> poem::Result<Json<OverviewView>> {
+        let model = OverviewModel::load_by_id(pool.0, RESUME_ID)
+            .await
+            .map_err(|_| NotFoundError)?;
 
-    //     let overview_views: Vec<OverviewView> = overviews
-    //         .into_iter()
-    //         .map(|dao| OverviewView::from_domain(&dao))
-    //         .collect();
+        let view = OverviewView::from(*model);
 
-    //     Ok(Json(overview_views))
-    // }
+        Ok(Json(view))
+    }
 
     // /// Contact Information
     // #[oai(path = "/contact", method = "get", tag = "ApiTags::Info")]
