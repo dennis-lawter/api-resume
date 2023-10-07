@@ -16,6 +16,7 @@ path = "src/main.rs"
 async-trait = "0.1.73"
 color-eyre = "0.6.2"
 dotenv = "0.15.0"
+futures = "0.3.28"
 poem = "1.3.58"
 poem-openapi = { version = "3", features = ["swagger-ui", "rapidoc", "openapi-explorer", "redoc"] }
 serde = "1.0.188"

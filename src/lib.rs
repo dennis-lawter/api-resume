@@ -2,6 +2,8 @@ mod action;
 mod domain;
 mod render;
 
+use std::sync::Arc;
+
 use action::api_v1::ApiV1;
 use action::api_v1_factory::api_v1_factory;
 use color_eyre::Result;
@@ -36,18 +38,18 @@ pub fn resume_api_factory(pool: SqlitePool) -> Result<ResumeApi> {
         .nest("/rapidoc", rapidoc)
         .nest("/openapi_explorer", openapi_explorer)
         .nest("/redoc", redoc)
-        // .nest("/spec_yaml", spec_yaml)
+        // .nest("/spec_yaml", spec_yaml) // not great because it downloads rather than renders in the page...
         .nest("/spec_json", spec_json)
         .at("/", index)
-        .data(pool);
+        .data(Arc::new(pool));
     Ok(ResumeApi::new(endpoints))
 }
 
 pub struct ResumeApi {
-    endpoints: AddDataEndpoint<Route, SqlitePool>,
+    endpoints: AddDataEndpoint<Route, Arc<SqlitePool>>,
 }
 impl ResumeApi {
-    fn new(endpoints: AddDataEndpoint<Route, SqlitePool>) -> Self {
+    fn new(endpoints: AddDataEndpoint<Route, Arc<SqlitePool>>) -> Self {
         Self { endpoints }
     }
 

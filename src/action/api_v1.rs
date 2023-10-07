@@ -1,3 +1,5 @@
+use std::sync::Arc;
+
 use poem::error::NotFoundError;
 use poem::web::Data;
 use poem_openapi::payload::Json;
@@ -28,8 +30,12 @@ impl ApiV1 {
 
     /// Resume Overview
     #[oai(path = "/", method = "get", tag = "ApiTags::Info")]
-    async fn overview(&self, pool: Data<&SqlitePool>) -> poem::Result<Json<OverviewView>> {
-        let model = OverviewModel::load_by_id(pool.0, RESUME_ID)
+    async fn overview(
+        &self,
+        middleware: Data<&Arc<SqlitePool>>,
+    ) -> poem::Result<Json<OverviewView>> {
+        let pool = middleware.0.clone();
+        let model = OverviewModel::load_by_id(pool, RESUME_ID)
             .await
             .map_err(|_| NotFoundError)?;
 
