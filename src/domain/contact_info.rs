@@ -8,6 +8,7 @@ use super::Dao;
 use super::DomainError;
 use super::StaticModel;
 
+#[derive(Clone)]
 pub struct ContactInfoModel {
     pub id: i64,
     pub method: String,

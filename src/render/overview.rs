@@ -5,6 +5,7 @@ use poem_openapi::Object;
 
 use crate::domain::overview::OverviewModel;
 
+use super::contact_info::ContactInfoView;
 use super::View;
 
 #[derive(ApiResponse)]
@@ -21,14 +22,21 @@ pub struct OverviewView {
     pub full_name: String,
     pub title: String,
     pub objective: String,
+    pub contact_info: Vec<ContactInfoView>,
 }
 impl View<OverviewModel> for OverviewView {}
 impl From<OverviewModel> for OverviewView {
     fn from(model: OverviewModel) -> Self {
+        let ci_views = model
+            .contact_infos
+            .iter()
+            .map(|boxed_ci| ContactInfoView::from(*(*boxed_ci).clone()))
+            .collect();
         Self {
             full_name: model.full_name.clone(),
             title: model.title.clone(),
             objective: model.objective.clone(),
+            contact_info: ci_views,
         }
     }
 }
