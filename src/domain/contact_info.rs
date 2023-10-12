@@ -8,12 +8,14 @@ use super::Dao;
 use super::DomainError;
 use super::StaticModel;
 
+/// Represents the contact information model in the domain.
 #[derive(Clone)]
 pub struct ContactInfoModel {
     pub id: i64,
     pub method: String,
     pub information: String,
 }
+
 impl From<ContactInfoDao> for ContactInfoModel {
     fn from(dao: ContactInfoDao) -> Self {
         Self {
@@ -23,6 +25,7 @@ impl From<ContactInfoDao> for ContactInfoModel {
         }
     }
 }
+
 #[async_trait]
 impl StaticModel for ContactInfoModel {
     async fn load_all(pool: Arc<SqlitePool>) -> Result<Vec<Box<Self>>> {
@@ -39,6 +42,7 @@ impl StaticModel for ContactInfoModel {
     }
 }
 
+/// Represents the data access object for contact information.
 #[derive(sqlx::FromRow, Clone)]
 pub struct ContactInfoDao {
     pub id: i64,
@@ -49,54 +53,48 @@ pub struct ContactInfoDao {
 #[async_trait]
 impl Dao for ContactInfoDao {
     async fn retrieve_all(pool: Arc<SqlitePool>) -> Result<Vec<Box<ContactInfoDao>>> {
-        let contact_infos_result: Result<Vec<ContactInfoDao>, sqlx::Error> = sqlx::query_as!(
+        let contact_infos = sqlx::query_as!(
             ContactInfoDao,
-            "select
-                id,
-                method,
-                information
-            from
-                contact_info
-            order by
-                id asc"
+            r#"
+select
+    id,
+    method,
+    information
+from
+    contact_info
+order by
+    id asc
+            "#,
         )
         .fetch_all(pool.as_ref())
-        .await;
+        .await
+        .map_err(DomainError::SqlxError)?;
 
-        match contact_infos_result {
-            Ok(contact_infos) => {
-                let boxed_contact_infos: Vec<Box<ContactInfoDao>> =
-                    contact_infos.into_iter().map(Box::new).collect();
-
-                Ok(boxed_contact_infos)
-            }
-            Err(err) => Err(err.into()),
-        }
+        Ok(contact_infos.into_iter().map(Box::new).collect())
     }
 
     async fn retrieve_by_id(pool: Arc<SqlitePool>, id: i64) -> Result<Box<ContactInfoDao>> {
-        let query_result = sqlx::query_as!(
+        let rows = sqlx::query_as!(
             ContactInfoDao,
-            "select
-                id,
-                method,
-                information
-            from
-                contact_info
-            where
-                id = $1",
+            r#"
+select
+    id,
+    method,
+    information
+from
+    contact_info
+where
+    id = $1
+            "#,
             id
         )
         .fetch_all(pool.as_ref())
-        .await;
+        .await
+        .map_err(DomainError::SqlxError)?;
 
-        match query_result {
-            Ok(rows) => rows
-                .get(0)
-                .cloned()
-                .map(Box::new)
-                .ok_or(DomainError::NoResult.into()),
-            Err(err) => Err(DomainError::SqlxError(err).into()),
-        }
+        rows.get(0)
+            .cloned()
+            .map(Box::new)
+            .ok_or(DomainError::NoResult.into())
     }
 }

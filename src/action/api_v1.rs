@@ -11,8 +11,10 @@ use crate::domain::overview::OverviewModel;
 use crate::domain::StaticModel;
 use crate::render::overview::OverviewView;
 
+/// Represents the v1 version of the API.
 pub struct ApiV1;
 
+/// API tags used for categorizing endpoints.
 #[allow(dead_code)]
 #[derive(Tags)]
 enum ApiTags {
@@ -28,7 +30,13 @@ const RESUME_ID: i64 = 1;
 impl ApiV1 {
     pub const PATH_VERSION: &'static str = "/v1";
 
-    /// Resume Overview
+    /// Fetches the overview of the resume.
+    ///
+    /// This endpoint retrieves the main overview of the resume, including general information,
+    /// skills, experiences, and education.
+    ///
+    /// # Errors
+    /// Returns a `NotFoundError` if the overview cannot be loaded.
     #[oai(path = "/", method = "get", tag = "ApiTags::Info")]
     async fn overview(
         &self,
@@ -43,40 +51,4 @@ impl ApiV1 {
 
         Ok(Json(view))
     }
-
-    // /// Contact Information
-    // #[oai(path = "/contact", method = "get", tag = "ApiTags::Info")]
-    // async fn contact_all(
-    //     &self,
-    //     pool: Data<&SqlitePool>,
-    // ) -> poem::Result<Json<Vec<ContactInfoView>>> {
-    //     let contact_infos = ContactInfoDao::retrieve_all(pool.0)
-    //         .await
-    //         .map_err(|_| NotFoundError)?;
-
-    //     let contact_info_views: Vec<ContactInfoView> = contact_infos
-    //         .into_iter()
-    //         .map(|dao| ContactInfoView::from_domain(&dao))
-    //         .collect();
-
-    //     Ok(Json(contact_info_views))
-    // }
-
-    // /// Experience
-    // #[oai(path = "/experience", method = "get", tag = "ApiTags::Experience")]
-    // async fn experience_all(
-    //     &self,
-    //     pool: Data<&SqlitePool>,
-    // ) -> poem::Result<Json<Vec<ExperienceView>>> {
-    //     let experiences = ExperienceDao::retrieve_all(pool.0)
-    //         .await
-    //         .map_err(|_| NotFoundError)?;
-
-    //     let experience_views: Vec<ExperienceView> = experiences
-    //         .into_iter()
-    //         .map(|dao| ExperienceView::from_domain(&dao))
-    //         .collect();
-
-    //     Ok(Json(experience_views))
-    // }
 }

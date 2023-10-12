@@ -1,61 +1,89 @@
+pub mod config;
+pub mod prelude;
+
 mod action;
 mod domain;
 mod render;
 
+mod static_handlers;
+
 use std::sync::Arc;
 
 use action::api_v1::ApiV1;
-use action::api_v1_factory::api_v1_factory;
+use action::api_v1_factory::create;
 use color_eyre::Result;
-use poem::handler;
-use poem::http::StatusCode;
+use config::Config;
 use poem::listener::TcpListener;
 use poem::middleware::AddDataEndpoint;
-use poem::web::Html;
 use poem::EndpointExt;
 use poem::Route;
+use poem_openapi::OpenApiService;
 use sqlx::SqlitePool;
 
-#[handler]
-async fn index() -> poem::Result<Html<String>, poem::Error> {
-    let content = tokio::fs::read_to_string("static/index.html")
-        .await
-        .map_err(|err| poem::Error::new(err, StatusCode::INTERNAL_SERVER_ERROR))?;
-    Ok(Html(content))
-}
+/// Creates and configures the resume API service with the given database pool and config.
+///
+/// # Parameters
+/// - `db_pool`: The SQLite database connection pool.
+/// - `config`: Configuration for the API.
+///
+/// # Returns
+/// Returns a `Result` containing the constructed `ResumeApiService`.
+pub fn create_resume_api(db_pool: SqlitePool, config: &Config) -> Result<ResumeApiService> {
+    let api_v1 = create(config)?;
 
-pub fn resume_api_factory(pool: SqlitePool) -> Result<ResumeApi> {
-    let api_v1 = api_v1_factory()?;
-    let swagger = api_v1.swagger_ui();
-    let rapidoc = api_v1.rapidoc();
-    let openapi_explorer = api_v1.openapi_explorer();
-    let redoc = api_v1.redoc();
-    // let spec_yaml = api_v1.spec_endpoint_yaml();
-    let spec_json = api_v1.spec_endpoint();
+    let documentation_endpoints = create_documentation_endpoints(&api_v1);
+
     let endpoints = Route::new()
         .nest(ApiV1::PATH_VERSION, api_v1)
-        .nest("/swagger", swagger)
-        .nest("/rapidoc", rapidoc)
-        .nest("/openapi_explorer", openapi_explorer)
-        .nest("/redoc", redoc)
-        // .nest("/spec_yaml", spec_yaml) // not great because it downloads rather than renders in the page...
-        .nest("/spec_json", spec_json)
-        .at("/", index)
-        .data(Arc::new(pool));
-    Ok(ResumeApi::new(endpoints))
+        .nest("/docs", documentation_endpoints)
+        .at("/", static_handlers::index)
+        .data(Arc::new(db_pool));
+
+    Ok(ResumeApiService::new(endpoints, &config.base_host))
 }
 
-pub struct ResumeApi {
-    endpoints: AddDataEndpoint<Route, Arc<SqlitePool>>,
+/// Helper function to create documentation endpoints for the provided API version.
+///
+/// # Parameters
+/// - `api_v1`: The version 1 of the API for which documentation endpoints should be created.
+///
+/// # Returns
+/// Returns a `Route` containing nested documentation endpoints.
+fn create_documentation_endpoints(api_v1: &OpenApiService<ApiV1, ()>) -> Route {
+    Route::new()
+        .nest("/swagger", api_v1.swagger_ui())
+        .nest("/rapidoc", api_v1.rapidoc())
+        .nest("/openapi_explorer", api_v1.openapi_explorer())
+        .nest("/redoc", api_v1.redoc())
+        .nest("/spec_json", api_v1.spec_endpoint())
 }
-impl ResumeApi {
-    fn new(endpoints: AddDataEndpoint<Route, Arc<SqlitePool>>) -> Self {
-        Self { endpoints }
+
+/// Represents the main structure of the Resume API service.
+pub struct ResumeApiService {
+    endpoints: AddDataEndpoint<Route, Arc<SqlitePool>>,
+    base_host: String,
+}
+
+impl ResumeApiService {
+    /// Creates a new instance of `ResumeApiService`.
+    ///
+    /// # Parameters
+    /// - `endpoints`: Configured endpoints for the API.
+    /// - `base_host`: Base host where the API will be served.
+    fn new(endpoints: AddDataEndpoint<Route, Arc<SqlitePool>>, base_host: &str) -> Self {
+        Self {
+            endpoints,
+            base_host: base_host.to_string(),
+        }
     }
 
+    /// Starts the API service and begins listening for incoming requests.
+    ///
+    /// # Returns
+    /// Returns a `Result` which is `Ok(())` when the server terminates successfully or contains
+    /// an error if there's an issue.
     pub async fn serve(self) -> Result<()> {
-        let base_url = std::env::var("BASE_HOST")?;
-        poem::Server::new(TcpListener::bind(base_url))
+        poem::Server::new(TcpListener::bind(&self.base_host))
             .run(self.endpoints)
             .await?;
         Ok(())

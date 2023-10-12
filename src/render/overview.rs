@@ -1,21 +1,8 @@
-use poem_openapi::payload::Json;
-use poem_openapi::payload::PlainText;
-use poem_openapi::ApiResponse;
-use poem_openapi::Object;
-
 use crate::domain::overview::OverviewModel;
+use poem_openapi::Object;
 
 use super::contact_info::ContactInfoView;
 use super::View;
-
-#[derive(ApiResponse)]
-pub enum GetOverviewListResponse {
-    #[oai(status = 200)]
-    Ok(Json<OverviewView>),
-
-    #[oai(status = 404)]
-    NotFound(PlainText<String>),
-}
 
 #[derive(Object)]
 pub struct OverviewView {
@@ -24,18 +11,20 @@ pub struct OverviewView {
     pub objective: String,
     pub contact_info: Vec<ContactInfoView>,
 }
+
 impl View<OverviewModel> for OverviewView {}
+
 impl From<OverviewModel> for OverviewView {
     fn from(model: OverviewModel) -> Self {
         let ci_views = model
             .contact_infos
-            .iter()
-            .map(|boxed_ci| ContactInfoView::from(*(*boxed_ci).clone()))
+            .into_iter()
+            .map(|boxed_ci| ContactInfoView::from(*boxed_ci))
             .collect();
         Self {
-            full_name: model.full_name.clone(),
-            title: model.title.clone(),
-            objective: model.objective.clone(),
+            full_name: model.full_name,
+            title: model.title,
+            objective: model.objective,
             contact_info: ci_views,
         }
     }
