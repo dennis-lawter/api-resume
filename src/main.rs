@@ -1,5 +1,3 @@
-#![feature(async_fn_in_trait)]
-
 mod api;
 
 use api::config::Config;

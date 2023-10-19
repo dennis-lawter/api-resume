@@ -1,25 +1,23 @@
 use std::collections::HashMap;
 
-use super::super::domain::experience::ExperienceWithAchievementRow;
+use super::super::domain::experience::ExperienceRow;
 
 #[derive(poem_openapi::Object)]
-pub struct ExperienceWithAchievementView {
-    pub id: i64,
+pub struct ExperienceView {
     pub employer: String,
     pub title: String,
     pub employment_start_date: String,
     pub employment_end_date: String,
     pub achievements: Vec<String>,
 }
-impl ExperienceWithAchievementView {
-    pub fn from_row_collection(rows: Vec<ExperienceWithAchievementRow>) -> Vec<Self> {
-        let mut map: HashMap<i64, (ExperienceWithAchievementView, Vec<String>)> = HashMap::new();
+impl ExperienceView {
+    pub fn from_row_collection(rows: Vec<ExperienceRow>) -> Vec<Self> {
+        let mut map: HashMap<i64, (Self, Vec<String>)> = HashMap::new();
 
         for row in rows {
             let entry = map.entry(row.id).or_insert_with(|| {
                 (
-                    ExperienceWithAchievementView {
-                        id: row.id,
+                    Self {
                         employer: row.employer.clone(),
                         title: row.title.clone(),
                         employment_start_date: row.employment_start_date.clone(),

@@ -25,6 +25,10 @@ pub enum Error {
     /// An error that occurs during database migrations using the `sqlx` crate.
     #[error(transparent)]
     MigrationError(#[from] sqlx::migrate::MigrateError),
+
+    /// An error that occurs when expecting a query result.
+    #[error("Not found")]
+    NotFound,
 }
 /// Converts application errors to poem errors, including HTTP response codes
 impl From<Error> for poem::Error {
@@ -32,6 +36,7 @@ impl From<Error> for poem::Error {
         match error {
             Error::SqlxError(err) => poem::Error::new(err, StatusCode::INTERNAL_SERVER_ERROR),
             Error::MigrationError(err) => poem::Error::new(err, StatusCode::INTERNAL_SERVER_ERROR),
+            Error::NotFound => poem::Error::new(error, StatusCode::NOT_FOUND),
         }
     }
 }

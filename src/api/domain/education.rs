@@ -3,23 +3,29 @@ use crate::api::prelude::*;
 use sqlx::SqlitePool;
 
 #[derive(sqlx::FromRow)]
-pub struct ContactInfoRow {
-    pub method: String,
-    pub information: String,
+pub struct EducationRow {
+    pub id: i64,
+    pub school: String,
+    pub degree: String,
+    pub education_start_date: String,
+    pub education_end_date: String,
 }
-impl ContactInfoRow {
+impl EducationRow {
     pub async fn get_all_by_resume_id(
         db_pool: &SqlitePool,
         resume_id: i64,
-    ) -> DomainResult<Vec<ContactInfoRow>> {
+    ) -> DomainResult<Vec<EducationRow>> {
         sqlx::query_as!(
-            ContactInfoRow,
+            EducationRow,
             r#"
 select
-    method,
-    information
+    id,
+    school,
+    degree,
+    education_start_date,
+    education_end_date
 from
-    contact_info
+    education
 where
     resume_id = $1
         "#,

@@ -4,10 +4,16 @@ use poem_openapi::OpenApi;
 use poem_openapi::Tags;
 use sqlx::SqlitePool;
 
-use crate::api::domain::contact_info::get_all_contact_infos_by_resume_id;
 use crate::api::domain::contact_info::ContactInfoRow;
-use crate::api::domain::experience::get_experience_with_achievements_by_resume_id;
-use crate::api::render::experience::ExperienceWithAchievementView;
+use crate::api::domain::education::EducationRow;
+use crate::api::domain::experience::ExperienceRow;
+use crate::api::domain::overview::OverviewRow;
+use crate::api::domain::skills::SkillRow;
+use crate::api::render::contact_info::ContactInfoView;
+use crate::api::render::education::EducationView;
+use crate::api::render::experience::ExperienceView;
+use crate::api::render::overview::OverviewView;
+use crate::api::render::skills::SkillView;
 
 /// Represents the v1 version of the API.
 pub struct ApiV1;
@@ -32,34 +38,44 @@ impl ApiV1 {
     ///
     /// This endpoint retrieves the main overview of the resume, including general information,
     /// skills, experiences, and education.
-    ///
-    /// # Errors
-    /// Returns a `NotFoundError` if the overview cannot be loaded.
-    // // #[oai(path = "/", method = "get", tag = "ApiTags::Info")]
-    // async fn overview(
-    //     &self,
-    //     middleware: Data<&Arc<SqlitePool>>,
-    // ) -> poem::Result<Json<OverviewView>> {
-    //     let pool = middleware.0.clone();
-    //     let model = OverviewModel::load_by_id(pool, RESUME_ID)
-    //         .await
-    //         .map_err(|_| NotFoundError)?;
+    #[oai(path = "/", method = "get", tag = "ApiTags::Info")]
+    async fn overview(&self, db_pool: Data<&SqlitePool>) -> poem::Result<Json<OverviewView>> {
+        let overview_row = OverviewRow::get_all_by_resume_id(db_pool.0, RESUME_ID)
+            .await
+            .map_err(poem::Error::from)?;
+        let ci = ContactInfoRow::get_all_by_resume_id(db_pool.0, RESUME_ID)
+            .await
+            .map_err(poem::Error::from)?;
+        let ci_view = ContactInfoView::from_collection(ci);
+        let exp = ExperienceRow::get_all_by_resume_id(db_pool.0, RESUME_ID)
+            .await
+            .map_err(poem::Error::from)?;
+        let exp_view = ExperienceView::from_row_collection(exp);
+        let edu = EducationRow::get_all_by_resume_id(db_pool.0, RESUME_ID)
+            .await
+            .map_err(poem::Error::from)?;
+        let edu_view = EducationView::from_collection(edu);
+        let skills = SkillRow::get_all_by_resume_id(db_pool.0, RESUME_ID)
+            .await
+            .map_err(poem::Error::from)?;
+        let skill_view = SkillView::from_row_collection(skills);
 
-    //     let view = OverviewView::from(*model);
+        let full_view = OverviewView::new(overview_row, ci_view, skill_view, exp_view, edu_view);
 
-    //     Ok(Json(view))
-    // }
+        Ok(Json(full_view))
+    }
 
     /// Fetches the contact info of the resume.
     #[oai(path = "/contact-info", method = "get", tag = "ApiTags::Info")]
     async fn contact_info(
         &self,
         db_pool: Data<&SqlitePool>,
-    ) -> poem::Result<Json<Vec<ContactInfoRow>>> {
-        let result = get_all_contact_infos_by_resume_id(db_pool.0, RESUME_ID)
+    ) -> poem::Result<Json<Vec<ContactInfoView>>> {
+        let ci = ContactInfoRow::get_all_by_resume_id(db_pool.0, RESUME_ID)
             .await
             .map_err(poem::Error::from)?;
-        Ok(Json(result))
+        let view = ContactInfoView::from_collection(ci);
+        Ok(Json(view))
     }
 
     /// Fetches experience with listed achievements.
@@ -67,11 +83,34 @@ impl ApiV1 {
     async fn experience(
         &self,
         db_pool: Data<&SqlitePool>,
-    ) -> poem::Result<Json<Vec<ExperienceWithAchievementView>>> {
-        let db_result = get_experience_with_achievements_by_resume_id(db_pool.0, RESUME_ID)
+    ) -> poem::Result<Json<Vec<ExperienceView>>> {
+        let exp = ExperienceRow::get_all_by_resume_id(db_pool.0, RESUME_ID)
             .await
             .map_err(poem::Error::from)?;
-        let view = ExperienceWithAchievementView::from_row_collection(db_result);
+        let view = ExperienceView::from_row_collection(exp);
+        Ok(Json(view))
+    }
+
+    /// Fetches education history.
+    #[oai(path = "/education", method = "get", tag = "ApiTags::Education")]
+    async fn education(
+        &self,
+        db_pool: Data<&SqlitePool>,
+    ) -> poem::Result<Json<Vec<EducationView>>> {
+        let edu = EducationRow::get_all_by_resume_id(db_pool.0, RESUME_ID)
+            .await
+            .map_err(poem::Error::from)?;
+        let view = EducationView::from_collection(edu);
+        Ok(Json(view))
+    }
+
+    /// Fetches skills, grouped by their shared skill groups.
+    #[oai(path = "/skills", method = "get", tag = "ApiTags::Skills")]
+    async fn skills(&self, db_pool: Data<&SqlitePool>) -> poem::Result<Json<Vec<SkillView>>> {
+        let skills = SkillRow::get_all_by_resume_id(db_pool.0, RESUME_ID)
+            .await
+            .map_err(poem::Error::from)?;
+        let view = SkillView::from_row_collection(skills);
         Ok(Json(view))
     }
 }

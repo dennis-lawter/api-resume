@@ -3,7 +3,7 @@ use crate::api::prelude::*;
 use sqlx::SqlitePool;
 
 #[derive(sqlx::FromRow, poem_openapi::Object)]
-pub struct ExperienceWithAchievementRow {
+pub struct ExperienceRow {
     pub id: i64,
     pub employer: String,
     pub title: String,
@@ -12,13 +12,14 @@ pub struct ExperienceWithAchievementRow {
     pub achievement_id: i64,
     pub achievement: String,
 }
-pub async fn get_experience_with_achievements_by_resume_id(
-    db_pool: &SqlitePool,
-    resume_id: i64,
-) -> DomainResult<Vec<ExperienceWithAchievementRow>> {
-    sqlx::query_as!(
-        ExperienceWithAchievementRow,
-        r#"
+impl ExperienceRow {
+    pub async fn get_all_by_resume_id(
+        db_pool: &SqlitePool,
+        resume_id: i64,
+    ) -> DomainResult<Vec<ExperienceRow>> {
+        sqlx::query_as!(
+            ExperienceRow,
+            r#"
 select
 	pp.id,
 	pp.employer,
@@ -33,11 +34,14 @@ join
 	previous_position_achievement ppa
 	on ppa.previous_position_id = pp.id
 where
-    pp.resume_id = $1;
+    pp.resume_id = $1
+order by
+    pp.id asc;
         "#,
-        resume_id
-    )
-    .fetch_all(db_pool)
-    .await
-    .map_err(Error::SqlxError)
+            resume_id
+        )
+        .fetch_all(db_pool)
+        .await
+        .map_err(Error::SqlxError)
+    }
 }
