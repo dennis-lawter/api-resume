@@ -2,6 +2,8 @@ use crate::api::prelude::*;
 
 use sqlx::SqlitePool;
 
+use super::DomainRow;
+
 #[derive(sqlx::FromRow)]
 pub struct EducationRow {
     pub id: i64,
@@ -10,11 +12,12 @@ pub struct EducationRow {
     pub education_start_date: String,
     pub education_end_date: String,
 }
-impl EducationRow {
-    pub async fn get_all_by_resume_id(
+#[async_trait::async_trait]
+impl DomainRow for EducationRow {
+    async fn get_all_by_resume_id(
         db_pool: &SqlitePool,
         resume_id: i64,
-    ) -> DomainResult<Vec<EducationRow>> {
+    ) -> ApplicationResult<Vec<EducationRow>> {
         sqlx::query_as!(
             EducationRow,
             r#"

@@ -2,17 +2,20 @@ use crate::api::prelude::*;
 
 use sqlx::SqlitePool;
 
-#[derive(sqlx::FromRow)]
+use super::DomainRow;
+
+#[derive(sqlx::FromRow, Clone)]
 pub struct OverviewRow {
     pub full_name: String,
     pub title: String,
     pub objective: String,
 }
-impl OverviewRow {
-    pub async fn get_all_by_resume_id(
+#[async_trait::async_trait]
+impl DomainRow for OverviewRow {
+    async fn get_all_by_resume_id(
         db_pool: &SqlitePool,
         resume_id: i64,
-    ) -> DomainResult<OverviewRow> {
+    ) -> ApplicationResult<Vec<OverviewRow>> {
         sqlx::query_as!(
             OverviewRow,
             r#"
@@ -27,7 +30,7 @@ where
         "#,
             resume_id
         )
-        .fetch_one(db_pool)
+        .fetch_all(db_pool)
         .await
         .map_err(Error::SqlxError)
     }

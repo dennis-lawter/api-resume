@@ -17,6 +17,8 @@ use poem::Route;
 use poem_openapi::OpenApiService;
 use sqlx::SqlitePool;
 
+use self::prelude::*;
+
 /// Creates and configures the resume API service with the given database pool and config.
 ///
 /// # Parameters
@@ -25,7 +27,10 @@ use sqlx::SqlitePool;
 ///
 /// # Returns
 /// Returns a `Result` containing the constructed `ResumeApiService`.
-pub fn create_resume_api(db_pool: SqlitePool, config: &Config) -> Result<ResumeApiService> {
+pub fn create_resume_api(
+    db_pool: SqlitePool,
+    config: &Config,
+) -> ApplicationResult<ResumeApiService> {
     let api_v1 = create(config)?;
 
     let documentation_endpoints = create_documentation_endpoints(&api_v1);

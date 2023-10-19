@@ -9,6 +9,7 @@ use crate::api::domain::education::EducationRow;
 use crate::api::domain::experience::ExperienceRow;
 use crate::api::domain::overview::OverviewRow;
 use crate::api::domain::skills::SkillRow;
+use crate::api::domain::DomainRow;
 use crate::api::render::contact_info::ContactInfoView;
 use crate::api::render::education::EducationView;
 use crate::api::render::experience::ExperienceView;
@@ -60,7 +61,13 @@ impl ApiV1 {
             .map_err(poem::Error::from)?;
         let skill_view = SkillView::from_row_collection(skills);
 
-        let full_view = OverviewView::new(overview_row, ci_view, skill_view, exp_view, edu_view);
+        let full_view = OverviewView::new(
+            overview_row[0].clone(),
+            ci_view,
+            skill_view,
+            exp_view,
+            edu_view,
+        );
 
         Ok(Json(full_view))
     }

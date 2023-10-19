@@ -2,18 +2,20 @@ use crate::api::prelude::*;
 
 use sqlx::SqlitePool;
 
+use super::DomainRow;
+
 #[derive(sqlx::FromRow, poem_openapi::Object)]
 pub struct SkillRow {
     pub id: i64,
     pub group_name: String,
     pub skill_name: String,
 }
-
-impl SkillRow {
-    pub async fn get_all_by_resume_id(
+#[async_trait::async_trait]
+impl DomainRow for SkillRow {
+    async fn get_all_by_resume_id(
         db_pool: &SqlitePool,
         resume_id: i64,
-    ) -> DomainResult<Vec<SkillRow>> {
+    ) -> ApplicationResult<Vec<SkillRow>> {
         sqlx::query_as!(
             SkillRow,
             r#"

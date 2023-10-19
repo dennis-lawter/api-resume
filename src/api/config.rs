@@ -1,4 +1,4 @@
-use color_eyre::Result;
+use super::prelude::*;
 
 /// Represents the configuration settings for the application.
 pub struct Config {
@@ -20,7 +20,7 @@ impl Config {
     /// # Returns
     /// Returns a `Result` wrapping the `Config` instance. Errors out if any of the required
     /// environment variables are not set or if there's an issue accessing them.
-    pub fn new() -> Result<Self> {
+    pub fn new() -> ApplicationResult<Self> {
         Ok(Self {
             database_url: std::env::var("DATABASE_URL")?,
             base_host: std::env::var("BASE_HOST")?,

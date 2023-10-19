@@ -2,16 +2,19 @@ use crate::api::prelude::*;
 
 use sqlx::SqlitePool;
 
+use super::DomainRow;
+
 #[derive(sqlx::FromRow)]
 pub struct ContactInfoRow {
     pub method: String,
     pub information: String,
 }
-impl ContactInfoRow {
-    pub async fn get_all_by_resume_id(
+#[async_trait::async_trait]
+impl DomainRow for ContactInfoRow {
+    async fn get_all_by_resume_id(
         db_pool: &SqlitePool,
         resume_id: i64,
-    ) -> DomainResult<Vec<ContactInfoRow>> {
+    ) -> ApplicationResult<Vec<ContactInfoRow>> {
         sqlx::query_as!(
             ContactInfoRow,
             r#"
