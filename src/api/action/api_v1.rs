@@ -6,6 +6,8 @@ use sqlx::SqlitePool;
 
 use crate::api::domain::contact_info::get_all_contact_infos_by_resume_id;
 use crate::api::domain::contact_info::ContactInfoRow;
+use crate::api::domain::experience::get_experience_with_achievements_by_resume_id;
+use crate::api::render::experience::ExperienceWithAchievementView;
 
 /// Represents the v1 version of the API.
 pub struct ApiV1;
@@ -58,5 +60,18 @@ impl ApiV1 {
             .await
             .map_err(poem::Error::from)?;
         Ok(Json(result))
+    }
+
+    /// Fetches experience with listed achievements.
+    #[oai(path = "/experience", method = "get", tag = "ApiTags::Experience")]
+    async fn experience(
+        &self,
+        db_pool: Data<&SqlitePool>,
+    ) -> poem::Result<Json<Vec<ExperienceWithAchievementView>>> {
+        let db_result = get_experience_with_achievements_by_resume_id(db_pool.0, RESUME_ID)
+            .await
+            .map_err(poem::Error::from)?;
+        let view = ExperienceWithAchievementView::from_row_collection(db_result);
+        Ok(Json(view))
     }
 }
