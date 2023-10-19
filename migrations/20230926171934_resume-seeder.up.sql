@@ -1,24 +1,23 @@
-/* contact_info */
-insert into contact_info (id, method, information)
-values (1, "e-mail", "dennis.lawter@gmail.com");
-
-insert into contact_info (id, method, information)
-values (2, "Phone (mobile)", "(864) 606-4606");
-
-insert into contact_info (id, method, information)
-values (3, "GitHub", "https://www.github.com/dennis-lawter/");
-
-insert into contact_info (id, method, information)
-values (4, "LinkedIn", "https://www.linkedin.com/in/dennislawter/");
-
-
 /* resume_overview */
-insert into resume_overview (full_name, title, objective)
-values ("Dennis Lawter", "Software Engineer", "I have always been driven by the desire to solve complex problems and stay up-to-date with the latest technologies and methodologies. My experience in developing, deploying, and maintaining software has allowed me to make a meaningful impact in the field, and I am constantly seeking new opportunities to push my skills to the next level.");
+insert into resume_overview (id, full_name, title, objective)
+values (1, "Dennis Lawter", "Software Engineer", "I have always been driven by the desire to solve complex problems and stay up-to-date with the latest technologies and methodologies. My experience in developing, deploying, and maintaining software has allowed me to make a meaningful impact in the field, and I am constantly seeking new opportunities to push my skills to the next level.");
+
+/* contact_info */
+insert into contact_info (id, method, information, resume_id)
+values (1, "e-mail", "dennis.lawter@gmail.com", 1);
+
+insert into contact_info (id, method, information, resume_id)
+values (2, "Phone (mobile)", "(864) 606-4606", 1);
+
+insert into contact_info (id, method, information, resume_id)
+values (3, "GitHub", "https://www.github.com/dennis-lawter/", 1);
+
+insert into contact_info (id, method, information, resume_id)
+values (4, "LinkedIn", "https://www.linkedin.com/in/dennislawter/", 1);
 
 /* skills */
-insert into skill_group (id, group_name)
-values (1, "Programming Languages");
+insert into skill_group (id, group_name, resume_id)
+values (1, "Programming Languages", 1);
     insert into skill (skill_group_id, skill_name)
     values
         (1, "PHP (5.x, 7.x, 8.x)"),
@@ -31,8 +30,8 @@ values (1, "Programming Languages");
         (1, "SQL (MySQL, T-SQL, PostgreSQL, SQLite)"),
         (1, "Javascript (ECMAScript 2009, 2015, 2016, 2017)");
 
-insert into skill_group (id, group_name)
-values (2, "Development Methodologies");
+insert into skill_group (id, group_name, resume_id)
+values (2, "Development Methodologies", 1);
     insert into skill (skill_group_id, skill_name)
     values
         (2, "Agile Methodology"),
@@ -42,16 +41,16 @@ values (2, "Development Methodologies");
         (2, "Object Oriented Design"),
         (2, "Functional Programming");
 
-insert into skill_group (id, group_name)
-values (3, "Operating Systems");
+insert into skill_group (id, group_name, resume_id)
+values (3, "Operating Systems", 1);
     insert into skill (skill_group_id, skill_name)
     values
         (3, "Debian Linux"),
         (3, "FreeBSD"),
         (3, "Microsoft Windows & Windows Server");
 
-insert into skill_group (id, group_name)
-values (4, "Project Management");
+insert into skill_group (id, group_name, resume_id)
+values (4, "Project Management", 1);
     insert into skill (skill_group_id, skill_name)
     values
         (4, "VCS (Git, Subversion)"),
@@ -60,8 +59,8 @@ values (4, "Project Management");
         (4, "Collaboration (Jira, Confluence, Slack)"),
         (4, "Containerization (Docker, DockerCompose, Kubernetes)");
 
-insert into skill_group (id, group_name)
-values (5, "Frameworks and SDKs");
+insert into skill_group (id, group_name, resume_id)
+values (5, "Frameworks and SDKs", 1);
     insert into skill (skill_group_id, skill_name)
     values
         (5, "PHP (Laravel, Yii 2, Yii 1.1)"),
@@ -71,8 +70,8 @@ values (5, "Frameworks and SDKs");
         (5, "Javascript (jQuery, Bootstrap, React)"),
         (5, "Other (SOAP, Godot)");
 
-insert into skill_group (id, group_name)
-values (6, "Misc");
+insert into skill_group (id, group_name, resume_id)
+values (6, "Misc", 1);
     insert into skill (skill_group_id, skill_name)
     values
         (6, "Accounting Packages (SAP, Epicor)"),
@@ -80,13 +79,14 @@ values (6, "Misc");
         (6, "Server Monitoring (Grafana, Prometheus)");
 
 /* positions */
-insert into previous_position (id, employer, title, employment_start_date, employment_end_date)
+insert into previous_position (id, employer, title, employment_start_date, employment_end_date, resume_id)
 values (
     1,
     "University of South Carolina",
     "Computer Science Tutor",
     "August 2010",
-    "May 2011"
+    "May 2011",
+    1
 );
 insert into previous_position_achievement (previous_position_id, achievement)
 values
@@ -94,13 +94,14 @@ values
     (1, "Learned various programming languages for the needs of my fellow students."),
     (1, "Taught the basics behind algorithm design, data structures, and artificial intelligence.");
 
-insert into previous_position (id, employer, title, employment_start_date, employment_end_date)
+insert into previous_position (id, employer, title, employment_start_date, employment_end_date, resume_id)
 values (
     2,
     "Servosity",
     "Web Developer",
     "November 2011",
-    "December 2011"
+    "December 2011",
+    1
 );
 insert into previous_position_achievement (previous_position_id, achievement)
 values
@@ -108,13 +109,14 @@ values
     (2, "Created new API integrations on a well designed system."),
     (2, "Gained experience with version control in a professional environment.");
 
-insert into previous_position (id, employer, title, employment_start_date, employment_end_date)
+insert into previous_position (id, employer, title, employment_start_date, employment_end_date, resume_id)
 values (
     3,
     "Ingram Micro",
     "Software Engineer",
     "June 2013",
-    "March 2022"
+    "March 2022",
+    1
 );
 insert into previous_position_achievement (previous_position_id, achievement)
 values
@@ -124,13 +126,14 @@ values
     (3, "Maintained multiple Debian Linux VMs and AWS instances running LAMPP-stack servers, Kubernetes clusters, SFTP hosts, and Jenkins automation servers."),
     (3, "Developed a REST API to leverage existing features externally, providing a pathway for modernization and integration with other systems.");
 
-insert into previous_position (id, employer, title, employment_start_date, employment_end_date)
+insert into previous_position (id, employer, title, employment_start_date, employment_end_date, resume_id)
 values (
     4,
     "Inseego",
     "Senior Software Engineer",
     "March 2022",
-    "Present"
+    "Present",
+    1
 );
 insert into previous_position_achievement (previous_position_id, achievement)
 values
@@ -139,5 +142,5 @@ values
     (4, "Redesigned portions of the billing system for greater accuracy and auditing visiblity.");
 
 /* education */
-insert into education (id, school, degree, education_start_date, education_end_date)
-values (1, "University of South Carolina", "Bachelor of Computer Science", "August 2007", "May 2011");
+insert into education (id, school, degree, education_start_date, education_end_date, resume_id)
+values (1, "University of South Carolina", "Bachelor of Computer Science", "August 2007", "May 2011", 1);

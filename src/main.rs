@@ -1,14 +1,15 @@
 #![feature(async_fn_in_trait)]
 
-mod domain;
+mod api;
 
-use dennis_lawter_resume_api_library::config::Config;
-use dennis_lawter_resume_api_library::create_resume_api;
-use dennis_lawter_resume_api_library::prelude::*;
+use api::config::Config;
+use api::create_resume_api;
+use api::prelude::*;
+
 use sqlx::SqlitePool;
 
 #[tokio::main]
-async fn main() -> Result<()> {
+async fn main() -> EyreResult<()> {
     color_eyre::install()?;
     dotenv::dotenv()?;
 
@@ -23,10 +24,10 @@ async fn main() -> Result<()> {
     Ok(())
 }
 
-async fn get_db_pool(db_url: &str) -> Result<SqlitePool, Error> {
+async fn get_db_pool(db_url: &str) -> EyreResult<SqlitePool, Error> {
     SqlitePool::connect(db_url).await.map_err(Error::from)
 }
 
-async fn migrate_db(pool: &SqlitePool) -> Result<(), Error> {
+async fn migrate_db(pool: &SqlitePool) -> EyreResult<(), Error> {
     sqlx::migrate!().run(pool).await.map_err(Error::from)
 }

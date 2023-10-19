@@ -1,3 +1,4 @@
+use poem::http::StatusCode;
 use thiserror::Error;
 
 /// A specialized `Result` type for operations that can return errors.
@@ -6,7 +7,8 @@ use thiserror::Error;
 /// results of operations that might produce an error. It is a shorthand for
 /// `std::result::Result` with a default error type of `color_eyre::Report`,
 /// which provides enhanced error reporting capabilities.
-pub type Result<T, E = color_eyre::Report> = std::result::Result<T, E>;
+pub type EyreResult<T, E = color_eyre::Report> = std::result::Result<T, E>;
+pub type DomainResult<T> = std::result::Result<T, Error>;
 
 /// Represents the set of possible errors encountered in the application.
 ///
@@ -23,4 +25,13 @@ pub enum Error {
     /// An error that occurs during database migrations using the `sqlx` crate.
     #[error(transparent)]
     MigrationError(#[from] sqlx::migrate::MigrateError),
+}
+/// Converts application errors to poem errors, including HTTP response codes
+impl From<Error> for poem::Error {
+    fn from(error: Error) -> Self {
+        match error {
+            Error::SqlxError(err) => poem::Error::new(err, StatusCode::INTERNAL_SERVER_ERROR),
+            Error::MigrationError(err) => poem::Error::new(err, StatusCode::INTERNAL_SERVER_ERROR),
+        }
+    }
 }

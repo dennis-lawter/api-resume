@@ -1,5 +1,7 @@
+use crate::api::config::Config;
+
 use super::api_v1::ApiV1;
-use crate::config::Config;
+
 use color_eyre::Result;
 use poem_openapi::OpenApiService;
 

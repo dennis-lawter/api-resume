@@ -4,10 +4,6 @@ version = "0.1.0"
 edition = "2021"
 authors = ["Dennis Lawter <dennis.lawter@gmail.com>"]
 
-[lib]
-name = "dennis_lawter_resume_api_library"
-path = "src/lib.rs"
-
 [[bin]]
 name = "dennis_lawter_resume_api_server"
 path = "src/main.rs"

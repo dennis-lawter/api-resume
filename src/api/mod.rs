@@ -4,10 +4,7 @@ pub mod prelude;
 mod action;
 mod domain;
 mod render;
-
 mod static_handlers;
-
-use std::sync::Arc;
 
 use action::api_v1::ApiV1;
 use action::api_v1_factory::create;
@@ -37,7 +34,7 @@ pub fn create_resume_api(db_pool: SqlitePool, config: &Config) -> Result<ResumeA
         .nest(ApiV1::PATH_VERSION, api_v1)
         .nest("/docs", documentation_endpoints)
         .at("/", static_handlers::index)
-        .data(Arc::new(db_pool));
+        .data(db_pool);
 
     Ok(ResumeApiService::new(endpoints, &config.base_host))
 }
@@ -60,7 +57,7 @@ fn create_documentation_endpoints(api_v1: &OpenApiService<ApiV1, ()>) -> Route {
 
 /// Represents the main structure of the Resume API service.
 pub struct ResumeApiService {
-    endpoints: AddDataEndpoint<Route, Arc<SqlitePool>>,
+    endpoints: AddDataEndpoint<Route, SqlitePool>,
     base_host: String,
 }
 
@@ -70,7 +67,7 @@ impl ResumeApiService {
     /// # Parameters
     /// - `endpoints`: Configured endpoints for the API.
     /// - `base_host`: Base host where the API will be served.
-    fn new(endpoints: AddDataEndpoint<Route, Arc<SqlitePool>>, base_host: &str) -> Self {
+    fn new(endpoints: AddDataEndpoint<Route, SqlitePool>, base_host: &str) -> Self {
         Self {
             endpoints,
             base_host: base_host.to_string(),
