@@ -25,6 +25,8 @@ from
     contact_info
 where
     resume_id = $1
+order by
+    id asc
         "#,
             resume_id
         )

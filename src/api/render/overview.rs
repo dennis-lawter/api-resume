@@ -4,8 +4,9 @@ use super::contact_info::ContactInfoView;
 use super::education::EducationView;
 use super::experience::ExperienceView;
 use super::skills::SkillView;
+use super::View;
 
-#[derive(poem_openapi::Object)]
+#[derive(poem_openapi::Object, Clone)]
 pub struct OverviewView {
     pub full_name: String,
     pub title: String,
@@ -15,22 +16,20 @@ pub struct OverviewView {
     pub experience: Vec<ExperienceView>,
     pub education: Vec<EducationView>,
 }
-impl OverviewView {
-    pub fn new(
-        overview_row: OverviewRow,
-        contact_info: Vec<ContactInfoView>,
-        skills: Vec<SkillView>,
-        experience: Vec<ExperienceView>,
-        education: Vec<EducationView>,
-    ) -> Self {
+impl View<OverviewRow> for OverviewView {
+    fn new(row: OverviewRow) -> Self {
         Self {
-            full_name: overview_row.full_name,
-            title: overview_row.title,
-            objective: overview_row.objective,
-            contact_info,
-            skills,
-            experience,
-            education,
+            full_name: row.full_name,
+            title: row.title,
+            objective: row.objective,
+            contact_info: vec![],
+            skills: vec![],
+            experience: vec![],
+            education: vec![],
         }
+    }
+
+    fn from_collection(rows: Vec<OverviewRow>) -> Vec<Self> {
+        rows.into_iter().map(Self::new).collect()
     }
 }

@@ -2,7 +2,7 @@ use crate::api::domain::education::EducationRow;
 
 use super::View;
 
-#[derive(poem_openapi::Object)]
+#[derive(poem_openapi::Object, Clone)]
 pub struct EducationView {
     pub school: String,
     pub degree: String,

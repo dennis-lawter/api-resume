@@ -3,7 +3,7 @@ use std::collections::HashMap;
 use super::super::domain::experience::ExperienceRow;
 use super::View;
 
-#[derive(poem_openapi::Object)]
+#[derive(poem_openapi::Object, Clone)]
 pub struct ExperienceView {
     pub employer: String,
     pub title: String,

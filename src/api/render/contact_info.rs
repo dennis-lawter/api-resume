@@ -2,7 +2,7 @@ use crate::api::domain::contact_info::ContactInfoRow;
 
 use super::View;
 
-#[derive(poem_openapi::Object)]
+#[derive(poem_openapi::Object, Clone)]
 pub struct ContactInfoView {
     pub method: String,
     pub information: String,

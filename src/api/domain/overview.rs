@@ -27,6 +27,8 @@ from
     resume_overview
 where
     id = $1
+order by
+    id asc
         "#,
             resume_id
         )

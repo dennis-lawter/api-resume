@@ -3,7 +3,7 @@ use std::collections::HashMap;
 use super::super::domain::skills::SkillRow;
 use super::View;
 
-#[derive(poem_openapi::Object)]
+#[derive(poem_openapi::Object, Clone)]
 pub struct SkillView {
     pub group_name: String,
     pub skills: Vec<String>,
