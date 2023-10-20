@@ -15,6 +15,7 @@ use crate::api::render::education::EducationView;
 use crate::api::render::experience::ExperienceView;
 use crate::api::render::overview::OverviewView;
 use crate::api::render::skills::SkillView;
+use crate::api::render::View;
 
 /// Represents the v1 version of the API.
 pub struct ApiV1;
@@ -51,7 +52,7 @@ impl ApiV1 {
         let exp = ExperienceRow::get_all_by_resume_id(db_pool.0, RESUME_ID)
             .await
             .map_err(poem::Error::from)?;
-        let exp_view = ExperienceView::from_row_collection(exp);
+        let exp_view = ExperienceView::from_collection(exp);
         let edu = EducationRow::get_all_by_resume_id(db_pool.0, RESUME_ID)
             .await
             .map_err(poem::Error::from)?;
@@ -59,7 +60,7 @@ impl ApiV1 {
         let skills = SkillRow::get_all_by_resume_id(db_pool.0, RESUME_ID)
             .await
             .map_err(poem::Error::from)?;
-        let skill_view = SkillView::from_row_collection(skills);
+        let skill_view = SkillView::from_collection(skills);
 
         let full_view = OverviewView::new(
             overview_row[0].clone(),
@@ -94,7 +95,7 @@ impl ApiV1 {
         let exp = ExperienceRow::get_all_by_resume_id(db_pool.0, RESUME_ID)
             .await
             .map_err(poem::Error::from)?;
-        let view = ExperienceView::from_row_collection(exp);
+        let view = ExperienceView::from_collection(exp);
         Ok(Json(view))
     }
 
@@ -117,7 +118,7 @@ impl ApiV1 {
         let skills = SkillRow::get_all_by_resume_id(db_pool.0, RESUME_ID)
             .await
             .map_err(poem::Error::from)?;
-        let view = SkillView::from_row_collection(skills);
+        let view = SkillView::from_collection(skills);
         Ok(Json(view))
     }
 }

@@ -1,22 +1,27 @@
 use std::collections::HashMap;
 
 use super::super::domain::skills::SkillRow;
+use super::View;
 
 #[derive(poem_openapi::Object)]
 pub struct SkillView {
-    pub skill_group_id: i64,
     pub group_name: String,
     pub skills: Vec<String>,
 }
-impl SkillView {
-    pub fn from_row_collection(rows: Vec<SkillRow>) -> Vec<Self> {
+impl View<SkillRow> for SkillView {
+    fn new(row: SkillRow) -> Self {
+        Self {
+            group_name: row.group_name,
+            skills: vec![],
+        }
+    }
+    fn from_collection(rows: Vec<SkillRow>) -> Vec<Self> {
         let mut map: HashMap<i64, (Self, Vec<String>)> = HashMap::new();
 
         for row in rows {
             let entry = map.entry(row.id).or_insert_with(|| {
                 (
                     Self {
-                        skill_group_id: row.id,
                         group_name: row.group_name.clone(),
                         skills: Vec::new(),
                     },

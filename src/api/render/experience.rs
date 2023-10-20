@@ -1,6 +1,7 @@
 use std::collections::HashMap;
 
 use super::super::domain::experience::ExperienceRow;
+use super::View;
 
 #[derive(poem_openapi::Object)]
 pub struct ExperienceView {
@@ -10,8 +11,17 @@ pub struct ExperienceView {
     pub employment_end_date: String,
     pub achievements: Vec<String>,
 }
-impl ExperienceView {
-    pub fn from_row_collection(rows: Vec<ExperienceRow>) -> Vec<Self> {
+impl View<ExperienceRow> for ExperienceView {
+    fn new(row: ExperienceRow) -> Self {
+        Self {
+            employer: row.employer,
+            title: row.title,
+            employment_start_date: row.employment_start_date,
+            employment_end_date: row.employment_end_date,
+            achievements: vec![],
+        }
+    }
+    fn from_collection(rows: Vec<ExperienceRow>) -> Vec<Self> {
         let mut map: HashMap<i64, (Self, Vec<String>)> = HashMap::new();
 
         for row in rows {

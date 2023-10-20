@@ -1,5 +1,7 @@
 use crate::api::domain::education::EducationRow;
 
+use super::View;
+
 #[derive(poem_openapi::Object)]
 pub struct EducationView {
     pub school: String,
@@ -7,8 +9,9 @@ pub struct EducationView {
     pub education_start_date: String,
     pub education_end_date: String,
 }
-impl EducationView {
-    pub fn new(row: EducationRow) -> Self {
+
+impl View<EducationRow> for EducationView {
+    fn new(row: EducationRow) -> Self {
         Self {
             school: row.school,
             degree: row.degree,
@@ -17,7 +20,7 @@ impl EducationView {
         }
     }
 
-    pub fn from_collection(rows: Vec<EducationRow>) -> Vec<Self> {
+    fn from_collection(rows: Vec<EducationRow>) -> Vec<Self> {
         rows.into_iter().map(Self::new).collect()
     }
 }
