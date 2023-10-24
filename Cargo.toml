@@ -3,6 +3,7 @@ name = "dennis-lawter-api-resume"
 version = "0.1.0"
 edition = "2021"
 authors = ["Dennis Lawter <dennis.lawter@gmail.com>"]
+description = "A RESTful API example providing my own professional resume."
 
 [[bin]]
 name = "dennis_lawter_resume_api_server"

@@ -1,5 +1,3 @@
-use std::env::VarError;
-
 use poem::http::StatusCode;
 use thiserror::Error;
 
@@ -39,8 +37,8 @@ pub enum Error {
     NotFound,
 
     /// An error with the env file.
-    #[error("ENV VAR missing")]
-    EnvVarMissing(#[from] VarError),
+    #[error("Environment variable '{0}' is missing")]
+    EnvVarMissing(String),
 }
 /// Converts application errors to poem errors, including HTTP response codes
 impl From<Error> for poem::Error {
