@@ -21,10 +21,8 @@ pub struct ApiV1;
 #[allow(dead_code)]
 #[derive(Tags)]
 enum ApiTags {
-    Info,
-    Skills,
-    Experience,
-    Education,
+    Abstract,
+    Details,
 }
 
 const RESUME_ID: i64 = 1;
@@ -46,7 +44,7 @@ impl ApiV1 {
     ///
     /// This endpoint retrieves the main overview of the resume, including general information,
     /// skills, experiences, and education.
-    #[oai(path = "/", method = "get", tag = "ApiTags::Info")]
+    #[oai(path = "/", method = "get", tag = "ApiTags::Abstract")]
     async fn overview(&self, db_pool: Data<&SqlitePool>) -> poem::Result<Json<OverviewView>> {
         let view: Vec<OverviewView> = fetch_and_render(db_pool.0).await?;
         if view.len() <= 0 {
@@ -63,7 +61,7 @@ impl ApiV1 {
     }
 
     /// Fetches the contact info of the resume.
-    #[oai(path = "/contact-info", method = "get", tag = "ApiTags::Info")]
+    #[oai(path = "/contact-info", method = "get", tag = "ApiTags::Details")]
     async fn contact_info(
         &self,
         db_pool: Data<&SqlitePool>,
@@ -73,7 +71,7 @@ impl ApiV1 {
     }
 
     /// Fetches experience with listed achievements.
-    #[oai(path = "/experience", method = "get", tag = "ApiTags::Experience")]
+    #[oai(path = "/experience", method = "get", tag = "ApiTags::Details")]
     async fn experience(
         &self,
         db_pool: Data<&SqlitePool>,
@@ -83,7 +81,7 @@ impl ApiV1 {
     }
 
     /// Fetches education history.
-    #[oai(path = "/education", method = "get", tag = "ApiTags::Education")]
+    #[oai(path = "/education", method = "get", tag = "ApiTags::Details")]
     async fn education(
         &self,
         db_pool: Data<&SqlitePool>,
@@ -93,7 +91,7 @@ impl ApiV1 {
     }
 
     /// Fetches skills, grouped by their shared skill groups.
-    #[oai(path = "/skills", method = "get", tag = "ApiTags::Skills")]
+    #[oai(path = "/skills", method = "get", tag = "ApiTags::Details")]
     async fn skills(&self, db_pool: Data<&SqlitePool>) -> poem::Result<Json<Vec<SkillView>>> {
         let view = fetch_and_render(db_pool.0).await?;
         Ok(Json(view))

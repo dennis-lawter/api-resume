@@ -7,14 +7,17 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Code+Pro">
     <style>
         html {
-            color: #f8f8f2;
+            color: #F8F8F2;
             background: #272822;
             font-family: "Source Code Pro", monospace;
             font-size: 150%;
             margin: 2em;
         }
 
-        h1,
+        h1 {
+            color: #CF433E
+        }
+
         h2,
         h3,
         h4,
@@ -34,23 +37,66 @@
         a:active {
             color: #F92672;
         }
+
+        code {
+            background-color: #1A1A1A;
+            border: 1px solid #9C7DDB;
+            padding: 0.2em;
+        }
     </style>
 </head>
 
 <body>
     <header>
         <h1>Dennis Lawter Resume API</h1>
+        <a href="https://github.com/dennis-lawter/api-resume">Review this project on GitHub</a>
         <p>
-            Welcome to the API documentation for my professional resume.
-            This API provides a RESTful interface, enabling
-            users to interact and retrieve data efficiently.
+            Welcome to the API documentation for the RESTful JSON API version of my professional resume.
         </p>
     </header>
 
     <section>
+        <h2>Purpose</h2>
+        <p>
+            This API was written as a demonstration of my experience as a developer,
+            using my skills in backend web development and devops.
+        </p>
+        <ul>
+            <li>
+                This API is written in <a href="https://www.rust-lang.org/">Rust</a>,
+                using <a href="https://crates.io/crates/poem-openapi">Poem OpenAPI</a>.
+            </li>
+            <li>
+                The data storage for this server is <a href="https://www.sqlite.org/">SQLite</a>,
+                using <a href="https://crates.io/crates/sqlx">SQLx</a> for querying and migrations.
+            </li>
+            <li>
+                The webserver is hosted via <a href="https://www.docker.com/">Docker</a> on my personal homelab server.
+            </li>
+            <li>
+                The server is configured for Continuous Delivery.
+                <ul>
+                    <li>
+                        Upon a push to the main branch, the webserver will rebuild itself automatically.
+                    </li>
+                    <li>
+                        Every 15 minutes, crontab runs
+                        <code>git pull</code>.
+                    </li>
+                    <li>
+                        A
+                        <code>post-merge</code>
+                        git hook executes
+                        <code>make docker-reup</code>
+                        when a change is pulled.
+                    </li>
+                </ul>
+            </li>
+        </ul>
         <h2>API Documentation</h2>
         <p>
-            Explore the documentation using your preferred API viewer, or use the provided raw JSON to suit your needs.
+            Explore the documentation using your preferred API viewer,
+            or import the raw JSON into the OpenAPI Specification tool of your choice.
         </p>
         <ul>
             <li>

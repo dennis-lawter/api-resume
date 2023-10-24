@@ -26,3 +26,5 @@ docker-ps:
 
 docker-bash:
 	docker exec -it api-resume_dennis_lawter_resume_api_server_1 /bin/bash
+
+docker-reup: docker-down docker-up
