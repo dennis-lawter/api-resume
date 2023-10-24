@@ -1,4 +1,4 @@
-version: '3.8'
+version: '3.4'
 
 services:
   dennis_lawter_resume_api_server:
@@ -10,5 +10,3 @@ services:
       - "3011:3011"
     stdin_open: true
     tty: true
-    env_file:
-      - .env
