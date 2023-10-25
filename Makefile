@@ -12,8 +12,8 @@ unmigrate:
 	sqlx migrate revert
 
 docker-up:
-	neofetch --color_blocks off --memory_unit gib |\
-		sed 's/[0-9.]\+GiB \/ //'\
+	neofetch --color_blocks off --memory_unit mib \
+	    | sed 's/[0-9.]\+MiB \/ //' \
 		> ./static/neofetch.txt
 	cargo build --release
 	docker-compose build --no-cache
