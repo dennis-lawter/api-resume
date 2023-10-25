@@ -39,6 +39,7 @@ pub fn create_resume_api(
         .nest(ApiV1::PATH_VERSION, api_v1)
         .nest("/docs", documentation_endpoints)
         .at("/", static_handlers::index)
+        .at("/neofetch", static_handlers::neofetch)
         .data(db_pool);
 
     Ok(ResumeApiService::new(endpoints, &config.base_host))

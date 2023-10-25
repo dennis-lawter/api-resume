@@ -26,8 +26,7 @@ async fn main() -> EyreResult<()> {
 }
 
 async fn get_db_pool(db_url: &str) -> EyreResult<SqlitePool, Error> {
-    let options = SqliteConnectOptions::from_str(format!("sqlite://{}", db_url).as_str())?
-        .create_if_missing(true);
+    let options = SqliteConnectOptions::from_str(db_url)?.create_if_missing(true);
 
     SqlitePool::connect_with(options).await.map_err(Error::from)
 }

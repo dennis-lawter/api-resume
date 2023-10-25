@@ -1,5 +1,2 @@
-*
-
+./target
 !./target/release/dennis_lawter_resume_api_server
-!./.env
-!./static/index.html
