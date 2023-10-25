@@ -8,7 +8,6 @@ WORKDIR /app
 COPY ./target/release/dennis_lawter_resume_api_server ./dennis_lawter_resume_api_server
 COPY ./.env ./
 COPY ./static/ /app/static/
-COPY ./neofetch.config ./
 
 #RUN /bin/bash -c "/usr/bin/neofetch" > /app/static/neofetch.txt
 

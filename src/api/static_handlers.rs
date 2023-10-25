@@ -33,14 +33,38 @@ pub async fn neofetch() -> poem::Result<Html<String>, poem::Error> {
         .await
         .map_err(|err| poem::Error::new(err, StatusCode::INTERNAL_SERVER_ERROR))?;
     let ansi_content_no_break = ansi_content
-        .replace("[20A", "INSERT_A_LINE_BREAK_HERE")
+        .replace("[20A", "INSERT_A_COLUMN_BREAK_HERE")
         .replace("[?25l[?7l", "");
     let ansi_converted = ansi_to_html::convert_escaped(&ansi_content_no_break)
         .map_err(|err| poem::Error::new(err, StatusCode::INTERNAL_SERVER_ERROR))?;
-    let html_content = ansi_converted.replace("\n", "<br>").replace(" ", "&nbsp;");
+    let html_content = ansi_converted
+        .replace("\n", "<br>")
+        .replace("  ", "&nbsp;&nbsp;");
     let html_page = format!(
-        "<html><head><style>body{{background-color:#000;color:#fff;}} .mono{{display:inline-block;font-family:monospace;margin:1em;vertical-align:top;}}</style></head><body><div class='mono'>{}</div></body></html>",
-        html_content.replace("INSERT_A_LINE_BREAK_HERE", "</div><div class='mono'>")
+        r#"
+<html>
+    <head>
+        <style>
+            body{{
+                background-color:#000;
+                color:#fff;
+            }}
+            .mono{{
+                display:inline-block;
+                font-family:monospace;
+                margin:1em;
+                vertical-align:top;
+            }}
+        </style>
+    </head>
+    <body>
+        <div class='mono'>
+            {}
+        </div>
+    </body>
+</html>
+"#,
+        html_content.replace("INSERT_A_COLUMN_BREAK_HERE", "</div><div class='mono'>")
     );
     Ok(Html(html_page))
 }
